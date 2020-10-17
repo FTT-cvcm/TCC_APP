@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Receitando.Views.RelatorioAnalisesView">
+    <ContentPage.Content>
+        <StackLayout>
+            <ListView ItemsSource="{Binding ListaAnalise}" Margin="25">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <Label>
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <FormattedString.Spans>
+                                                <Span Text="{Binding Data}" FontAttributes="Bold"></Span>
+                                                <Span Text=" - "></Span>
+                                                <Span Text="{Binding TextoCapturado}" FontAttributes="Bold"></Span>
+                                                <Span Text=" - "></Span>
+                                                <Span Text="{Binding PerfilAgressivo}" FontAttributes="Bold"></Span>
+                                            </FormattedString.Spans>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>        
+    </ContentPage.Content>
+</ContentPage>

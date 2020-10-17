@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Receitando"
+             x:Class="Receitando.AnaliseView">
+
+    <StackLayout>
+        <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
+            <Label Text="MVP - Combate à violência contra a mulher" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+        </Frame>       
+        <Label Text="Clique no botão abaixo para gravar um áudio" FontSize="16" Padding="30,0,30,0"/>
+        <Button x:Name="start"
+                Text="Gravar"
+                VerticalOptions="CenterAndExpand"
+                HorizontalOptions="Center"
+                Clicked="Button_Clicked"></Button>
+        <Label IsVisible='False' x:Name="recon" Text="Texto convertido" FontSize="16" Padding="30,0,30,0"/>
+        <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"></Button>
+    </StackLayout>
+
+</ContentPage>
