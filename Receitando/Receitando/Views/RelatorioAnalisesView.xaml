@@ -18,6 +18,8 @@
                                                 <Span Text="{Binding TextoCapturado}" FontAttributes="Bold"></Span>
                                                 <Span Text=" - "></Span>
                                                 <Span Text="{Binding PerfilAgressivo}" FontAttributes="Bold"></Span>
+                                                <Span Text=" - "></Span>
+                                                <Span Text="{Binding UltimaLocalizacao}" FontAttributes="Bold"></Span>
                                             </FormattedString.Spans>
                                         </FormattedString>
                                     </Label.FormattedText>

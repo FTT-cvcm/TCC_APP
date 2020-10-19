@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Essentials;
 
 namespace Receitando.Model
 {
@@ -26,17 +28,19 @@ namespace Receitando.Model
 
         public string TextoCapturado { get; set; }
 
+        public string UltimaLocalizacao { get; set; }
+
         public bool PerfilAgressivo { get; set; }
 
         public Analise()
         {
 
         }
-        public Analise(string textoCapturado,bool analiseTexto)
+        public Analise(string textoCapturado,bool analiseTexto, string ultimaLocalizacao)
         {
             this.TextoCapturado = textoCapturado;
             this.PerfilAgressivo = analiseTexto;
-        }
-
+            this.UltimaLocalizacao = ultimaLocalizacao;
+        }        
     }
 }

@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace Receitando
 {
@@ -65,13 +66,11 @@ namespace Receitando
             recon.Text = args;
             TextoCapturado = args;
             PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado));
+            string UltimaLocalizacao = await GetCurrentLocation();
 
-            analise = new Analise(TextoCapturado, PerfilAgressivo);
+            analise = new Analise(TextoCapturado, PerfilAgressivo, UltimaLocalizacao);
             viewModel.analise = analise;
-            viewModel.SalvarAnaliseDB();
-
-          
-
+            viewModel.SalvarAnaliseDB();          
         }
 
         private void Button_Clicked(object sender, EventArgs e)
@@ -86,6 +85,21 @@ namespace Receitando
             }
         }
 
+        static async Task<String> GetCurrentLocation()
+        {
+            try
+            {
+                var request = new GeolocationRequest(GeolocationAccuracy.Best);
+                var location = await Geolocation.GetLocationAsync(request);
+                string LocalAtual = location.Latitude.ToString() + ";" + location.Longitude.ToString();
+                return LocalAtual;
+            }
+            catch (Exception ex)
+            {
+                string LocalAtual = "Não disponível";
+                return LocalAtual;
+            }
+        }
         static async Task<String> analiseSentimento(string texto)
         {
             // ... Use HttpClient.
