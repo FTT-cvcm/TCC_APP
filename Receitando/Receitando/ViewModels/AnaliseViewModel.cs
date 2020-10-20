@@ -35,7 +35,7 @@ namespace Receitando.ViewModels
 
 
 
-        public async void SalvarAnaliseDB()
+        public void SalvarAnaliseDB()
         {
 
             using (var conexao = DependencyService.Get<ISQLite>().PegarConnection())

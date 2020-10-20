@@ -14,13 +14,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Essentials;
+using Android.App;
 
 namespace Receitando
 {
     public partial class AnaliseView : ContentPage
     {
         private ISpeechToText _speechRecongnitionInstance;
-
         public bool PerfilAgressivo { get; set; }
         public string TextoCapturado { get; set; }
         public Analise analise { get; set; }
@@ -65,12 +65,18 @@ namespace Receitando
 
             recon.Text = args;
             TextoCapturado = args;
-            PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado));
+            try
+            {
+                PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado));
+            }
+            catch
+            {                  
+            }
             string UltimaLocalizacao = await GetCurrentLocation();
-
             analise = new Analise(TextoCapturado, PerfilAgressivo, UltimaLocalizacao);
             viewModel.analise = analise;
             viewModel.SalvarAnaliseDB();          
+            
         }
 
         private void Button_Clicked(object sender, EventArgs e)
@@ -101,24 +107,9 @@ namespace Receitando
             }
         }
         static async Task<String> analiseSentimento(string texto)
-        {
-            // ... Use HttpClient.
+        {            
             HttpClient client = new HttpClient();
-
-            var byteArray = Encoding.ASCII.GetBytes("1575-12+AosVZ:tVmYCvtDx1BJ2sF6GEK6Wj1GQUdY1ulynqGkqQ9zr5BF");
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-            var data = new { T = texto, SL = "PtBr", EM = "True" };
-            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await client.PostAsync("https://api.gotit.ai/NLU/v1.4/Analyze", content);
-            HttpContent responseContent = response.Content;
-
-            // ... Check Status Code                                            
-            //Console.WriteLine("Response StatusCode: " + (int)response.StatusCode);
-
-            // ... Read the string.
-            string result = await responseContent.ReadAsStringAsync();
+            string result = await client.GetStringAsync("https://analise-ldw7aff3gq-uc.a.run.app/analise?frase=" + texto);       
 
             return result;
         }
@@ -126,12 +117,8 @@ namespace Receitando
         bool analisaResultadoAPI(string resultado)
         {
             JObject JSON = JObject.Parse(resultado);
-            string raiva = (string)JSON["emotions"]["anger"];
-            string medo = (string)JSON["emotions"]["fear"];
-            if (Convert.ToDouble(raiva) > 0.8)
-                return true;
-            if (Convert.ToDouble(medo) > 0.8)
-                return true;
+            if ((double)JSON["valor"] > 0.6)
+                return true;           
             return false;
         }
 
