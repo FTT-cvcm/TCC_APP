@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Android.App;
 using Android.Content;
 using Android.Speech;
@@ -35,7 +34,7 @@ namespace Receitando.Droid
                     voiceIntent.PutExtra(RecognizerIntent.ExtraLanguageModel, RecognizerIntent.LanguageModelFreeForm);
 
 
-                    voiceIntent.PutExtra(RecognizerIntent.ExtraPrompt, "Speak now");
+                    voiceIntent.PutExtra(RecognizerIntent.ExtraPrompt, "Fale agora");
 
                     voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputCompleteSilenceLengthMillis, 1500);
                     voiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputPossiblyCompleteSilenceLengthMillis, 1500);
@@ -63,7 +62,7 @@ namespace Receitando.Droid
             }
             else
             {
-                throw new Exception("No mic found");
+                throw new Exception("Microfone não encontrado!");
             }
         }
 

@@ -13,8 +13,9 @@
                 Text="Gravar"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
-                Clicked="Button_Clicked"></Button>
-        <Label IsVisible='False' x:Name="recon" Text="Texto convertido" FontSize="16" Padding="30,0,30,0"/>
+                Command="{Binding ReconhecimentoDeVozCommand}"
+                IsEnabled ="True"></Button>
+        <Label IsVisible='False' x:Name="recon" Text="{Binding Recon}" FontSize="16" Padding="30,0,30,0"/>
         <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"></Button>
     </StackLayout>
 
