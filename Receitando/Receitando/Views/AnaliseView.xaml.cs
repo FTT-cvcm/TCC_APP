@@ -1,4 +1,5 @@
-﻿using Receitando.ViewModels;
+﻿using Receitando.Services;
+using Receitando.ViewModels;
 using Receitando.Views;
 using Xamarin.Forms;
 
@@ -6,14 +7,15 @@ namespace Receitando
 {
 	public partial class AnaliseView : ContentPage
 	{
-			
-				
+
+		IMicrophoneService micService;
 		public AnaliseViewModel viewModel { get; set; }
 		public AnaliseView()
 		{
 			InitializeComponent();
 			this.viewModel = new AnaliseViewModel();
 			this.BindingContext = viewModel;
+			micService = DependencyService.Resolve<IMicrophoneService>();
 
 		}			
 

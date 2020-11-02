@@ -8,7 +8,7 @@ using Xamarin.Forms;
 
 namespace Receitando.ViewModels
 {
-    public class RelatorioAnalisesViewModel
+    public class RelatorioAnalisesViewModel : BaseViewModel
     {
         ObservableCollection<Analise> listaAnalise = new ObservableCollection<Analise>();
 

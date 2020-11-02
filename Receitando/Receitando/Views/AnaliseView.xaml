@@ -9,12 +9,18 @@
             <Label Text="MVP - Combate à violência contra a mulher" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
         </Frame>       
         <Label Text="Clique no botão abaixo para gravar um áudio" FontSize="16" Padding="30,0,30,0"/>
+        <ActivityIndicator x:Name="transcribingIndicator"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Start"
+                           WidthRequest="300"
+                           IsRunning="{Binding ActiveIndicator}" />
         <Button x:Name="start"
-                Text="Gravar"
+                Text="{Binding ButtonText}"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
                 Command="{Binding ReconhecimentoDeVozCommand}"
-                IsEnabled ="True"></Button>
+                BackgroundColor="{Binding ButtonColor}"                
+                ></Button>
         <Label IsVisible='False' x:Name="recon" Text="{Binding Recon}" FontSize="16" Padding="30,0,30,0"/>
         <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"></Button>
     </StackLayout>

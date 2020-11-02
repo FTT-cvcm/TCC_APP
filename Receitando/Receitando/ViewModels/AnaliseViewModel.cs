@@ -1,11 +1,11 @@
-﻿using Android.Service.Voice;
+﻿using Microsoft.CognitiveServices.Speech;
 using Newtonsoft.Json.Linq;
 using Receitando.Data;
 using Receitando.Model;
+using Receitando.Services;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -13,66 +13,83 @@ using Xamarin.Forms;
 
 namespace Receitando.ViewModels
 {
-	public class AnaliseViewModel
+	public class AnaliseViewModel : BaseViewModel
 	{
 
-		private ISpeechToText _speechRecongnitionInstance;
+		SpeechRecognizer recognizer;
+		IMicrophoneService micService;
+		bool isTranscribing = false;
+		Color buttonColor = Color.LightBlue;
+		bool analisando = false;
+
+		public Color ButtonColor
+		{
+			get
+			{
+				return buttonColor;
+			}
+			set
+			{
+				buttonColor = value;
+				OnPropertyChanged();
+				OnPropertyChanged("ButtonColor");
+			}
+		}
+
+		string buttonText = "Play";
+
+
+		public string ButtonText
+		{
+			get
+			{
+				return buttonText;
+			}
+			set
+			{
+				buttonText = value;
+				OnPropertyChanged();
+				OnPropertyChanged(ButtonText);
+			}
+		}
+		bool activeIndicator = false;
+		public bool ActiveIndicator
+		{
+			get
+			{
+				return activeIndicator;
+			}
+			set
+			{
+				activeIndicator = value;
+				OnPropertyChanged();
+				OnPropertyChanged("ActiveIndicator");
+			}
+		}
+
+
+		//Azure
+
+		//private ISpeechToText _speechRecongnitionInstance;
 		public bool PerfilAgressivo { get; set; }
-		public string TextoCapturado { get; set; }
-
-		private bool enabledStart = true;
-
-		public bool EnabledStart  { get; set; }
-		public string Recon { get; set; }
-
+		public List<string> TextoCapturado = new List<string>();
 		public ICommand VerAnaliseAudiosCommand { get; private set; }
 		public ICommand ReconhecimentoDeVozCommand { get; private set; }
 		public Analise analise { get; set; }
-
 		public AnaliseViewModel()
 		{
-			try
-			{
-				_speechRecongnitionInstance = DependencyService.Get<ISpeechToText>();
-			}
-			catch (Exception ex)
-			{
-				Recon = ex.Message;
-			}
+
+			micService = DependencyService.Resolve<IMicrophoneService>();
 			SendCommands();
-			Subscribe();
+			
 		}
-
-		private void Subscribe()
-		{
-			MessagingCenter.Subscribe<ISpeechToText, string>(this, "STT", (sender, args) =>
-			{
-				SpeechToTextFinalResultRecieved(args);
-			});
-
-			MessagingCenter.Subscribe<ISpeechToText>(this, "Final", (sender) =>
-			{
-				EnabledStart = true;
-			});
-
-			MessagingCenter.Subscribe<IMessageSender, string>(this, "STT", (sender, args) =>
-			{
-				SpeechToTextFinalResultRecieved(args);
-			});
-		}
+				
 
 		public AnaliseViewModel(Analise analise)
 		{
+			micService = DependencyService.Resolve<IMicrophoneService>();
 			this.analise = analise;
-			SendCommands();
-			try
-			{
-				_speechRecongnitionInstance = DependencyService.Get<ISpeechToText>();
-			}
-			catch (Exception ex)
-			{
-				//recon = ex.Message;
-			}
+			SendCommands();		
 		}
 
 		private void SendCommands()
@@ -85,21 +102,9 @@ namespace Receitando.ViewModels
 
 			ReconhecimentoDeVozCommand = new Command(() =>
 			{
-				ReconhecimentoVoz();
+				TranscribeClicked();
 			}
 			);
-		}
-
-		private void ReconhecimentoVoz()
-		{
-			try
-			{
-				_speechRecongnitionInstance.StartSpeechToText();
-			}
-			catch (Exception ex)
-			{
-				Recon = ex.Message;
-			}
 		}
 
 		public void SalvarAnaliseDB()
@@ -141,26 +146,114 @@ namespace Receitando.ViewModels
 				return true;
 			return false;
 		}
-
-		private async void SpeechToTextFinalResultRecieved(string args)
+	
+		async void TranscribeClicked()
 		{
+			bool isMicEnabled = await micService.GetPermissionAsync();
 
-			// A MÁGICA ACONTECE AQUI !!!!!
-
-
-			Recon = args;
-			TextoCapturado = args;
-			try
+			// EARLY OUT: make sure mic is accessible
+			if (!isMicEnabled)
 			{
-				PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado));
+				UpdateTranscription("Acesso ao microfone não concedido.");
+				return;
 			}
-			catch
-			{
-			}
-			string UltimaLocalizacao = await GetCurrentLocation();
-			analise = new Analise(TextoCapturado, PerfilAgressivo, UltimaLocalizacao);
-			SalvarAnaliseDB();
 
+			// initialize speech recognizer 
+			if (recognizer == null)
+			{
+				var config = SpeechConfig.FromSubscription(Constants.CognitiveServicesApiKey, Constants.CognitiveServicesRegion);
+				config.SpeechRecognitionLanguage = "pt-BR";
+				recognizer = new SpeechRecognizer(config);
+				recognizer.Recognized += (obj, args) =>
+				{
+					UpdateTranscription(args.Result.Text);
+				};
+			}
+
+			// if already transcribing, stop speech recognizer
+			if (isTranscribing)
+			{
+				try
+				{
+					await recognizer.StopContinuousRecognitionAsync();
+				}
+				catch (Exception ex)
+				{
+					UpdateTranscription(ex.Message);
+				}
+				isTranscribing = false;
+			}
+
+			// if not transcribing, start speech recognizer
+			else
+			{
+				try
+				{
+					await recognizer.StartContinuousRecognitionAsync();
+				}
+				catch (Exception ex)
+				{
+					UpdateTranscription(ex.Message);
+				}
+				isTranscribing = true;
+			}
+			UpdateDisplayState();
+		}
+		int i = 0;
+		private async void SpeechToTextFinalResultRecieved()
+		{
+			analisando = true;
+            while(i < TextoCapturado.Count)
+			{
+				try
+				{
+					PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado[i]));
+				}
+				catch
+				{
+				}
+				string UltimaLocalizacao = await GetCurrentLocation();
+				analise = new Analise(TextoCapturado[i], PerfilAgressivo, UltimaLocalizacao);
+				SalvarAnaliseDB();
+				//TextoCapturado.Remove(TextoCapturado[i]); não dá para limpar a lista enquanto outro objeto adicionar nela.
+				i++;
+			}
+			analisando = false;
+		}
+
+		void UpdateTranscription(string newText)
+		{
+			//Device.BeginInvokeOnMainThread(() =>
+			//{
+			if (!string.IsNullOrWhiteSpace(newText))
+			{
+				TextoCapturado.Add(newText); //pega o texto transcrito						
+			}
+			if (!analisando)
+			{
+				SpeechToTextFinalResultRecieved();
+			}
+			//});
+
+		}
+		void UpdateDisplayState()
+		{
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				if (isTranscribing)
+				{
+					ButtonText = "Stop";
+					ButtonColor = Color.Red;
+					ActiveIndicator = true;
+				}
+				else
+				{
+					ButtonText = "Play";
+					ButtonColor = Color.LightBlue;
+					ActiveIndicator = false;
+
+				}
+			});
 		}
 
 	}
