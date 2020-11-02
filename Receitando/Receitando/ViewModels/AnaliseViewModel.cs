@@ -65,12 +65,7 @@ namespace Receitando.ViewModels
 				OnPropertyChanged();
 				OnPropertyChanged("ActiveIndicator");
 			}
-		}
-
-
-		//Azure
-
-		//private ISpeechToText _speechRecongnitionInstance;
+		}		
 		public bool PerfilAgressivo { get; set; }
 		public List<string> TextoCapturado = new List<string>();
 		public ICommand VerAnaliseAudiosCommand { get; private set; }
@@ -81,15 +76,15 @@ namespace Receitando.ViewModels
 
 			micService = DependencyService.Resolve<IMicrophoneService>();
 			SendCommands();
-			
+
 		}
-				
+
 
 		public AnaliseViewModel(Analise analise)
 		{
 			micService = DependencyService.Resolve<IMicrophoneService>();
 			this.analise = analise;
-			SendCommands();		
+			SendCommands();
 		}
 
 		private void SendCommands()
@@ -122,7 +117,7 @@ namespace Receitando.ViewModels
 			try
 			{
 				var request = new GeolocationRequest(GeolocationAccuracy.Best);
-				var location = await Geolocation.GetLocationAsync(request);
+				var location = await Geolocation.GetLastKnownLocationAsync();
 				string LocalAtual = location.Latitude.ToString() + ";" + location.Longitude.ToString();
 				return LocalAtual;
 			}
@@ -146,7 +141,7 @@ namespace Receitando.ViewModels
 				return true;
 			return false;
 		}
-	
+
 		async void TranscribeClicked()
 		{
 			bool isMicEnabled = await micService.GetPermissionAsync();
@@ -203,18 +198,19 @@ namespace Receitando.ViewModels
 		private async void SpeechToTextFinalResultRecieved()
 		{
 			analisando = true;
-            while(i < TextoCapturado.Count)
+			while (i < TextoCapturado.Count)
 			{
 				try
 				{
 					PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado[i]));
+					//string UltimaLocalizacao = await GetCurrentLocation();
+					//analise = new Analise(TextoCapturado[i], PerfilAgressivo, UltimaLocalizacao);
+					analise = new Analise(TextoCapturado[i], PerfilAgressivo);
+					SalvarAnaliseDB();
 				}
 				catch
 				{
 				}
-				string UltimaLocalizacao = await GetCurrentLocation();
-				analise = new Analise(TextoCapturado[i], PerfilAgressivo, UltimaLocalizacao);
-				SalvarAnaliseDB();
 				//TextoCapturado.Remove(TextoCapturado[i]); não dá para limpar a lista enquanto outro objeto adicionar nela.
 				i++;
 			}
@@ -223,17 +219,17 @@ namespace Receitando.ViewModels
 
 		void UpdateTranscription(string newText)
 		{
-			//Device.BeginInvokeOnMainThread(() =>
-			//{
-			if (!string.IsNullOrWhiteSpace(newText))
+			Device.BeginInvokeOnMainThread(() =>
 			{
-				TextoCapturado.Add(newText); //pega o texto transcrito						
-			}
-			if (!analisando)
-			{
-				SpeechToTextFinalResultRecieved();
-			}
-			//});
+				if (!string.IsNullOrWhiteSpace(newText))
+				{
+					TextoCapturado.Add(newText);
+				}
+				if (!analisando)
+				{
+					SpeechToTextFinalResultRecieved();
+				}
+			});
 
 		}
 		void UpdateDisplayState()

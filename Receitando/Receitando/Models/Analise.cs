@@ -41,6 +41,12 @@ namespace Receitando.Model
             this.TextoCapturado = textoCapturado;
             this.PerfilAgressivo = analiseTexto;
             this.UltimaLocalizacao = ultimaLocalizacao;
-        }        
+        }
+
+        public Analise(string textoCapturado, bool analiseTexto)
+        {
+            this.TextoCapturado = textoCapturado;
+            this.PerfilAgressivo = analiseTexto;            
+        }
     }
 }
