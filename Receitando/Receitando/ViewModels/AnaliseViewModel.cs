@@ -5,9 +5,11 @@ using Receitando.Model;
 using Receitando.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Telegram.Bot;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -15,29 +17,20 @@ namespace Receitando.ViewModels
 {
 	public class AnaliseViewModel : BaseViewModel
 	{
+		//Controla o envio de mensagens para o Telegram
+		Stopwatch stopwatch = new Stopwatch();
+		//Tempo em milisegundos entre cada mensagem enviada
+		const long APImilisegundos = 2000;
+
+		string buttonText = "Iniciar";
+		bool activeIndicator = false;
+		Color buttonColor = Color.LightBlue;
 
 		SpeechRecognizer recognizer;
 		IMicrophoneService micService;
 		bool isTranscribing = false;
-		Color buttonColor = Color.LightBlue;
+		
 		bool analisando = false;
-
-		public Color ButtonColor
-		{
-			get
-			{
-				return buttonColor;
-			}
-			set
-			{
-				buttonColor = value;
-				OnPropertyChanged();
-				OnPropertyChanged("ButtonColor");
-			}
-		}
-
-		string buttonText = "Play";
-
 
 		public string ButtonText
 		{
@@ -51,8 +44,7 @@ namespace Receitando.ViewModels
 				OnPropertyChanged();
 				OnPropertyChanged(ButtonText);
 			}
-		}
-		bool activeIndicator = false;
+		}	
 		public bool ActiveIndicator
 		{
 			get
@@ -65,11 +57,25 @@ namespace Receitando.ViewModels
 				OnPropertyChanged();
 				OnPropertyChanged("ActiveIndicator");
 			}
-		}		
+		}
+		public Color ButtonColor
+		{
+			get
+			{
+				return buttonColor;
+			}
+			set
+			{
+				buttonColor = value;
+				OnPropertyChanged();
+				OnPropertyChanged("ButtonColor");
+			}
+		}	
 		public bool PerfilAgressivo { get; set; }
 		public List<string> TextoCapturado = new List<string>();
 		public ICommand VerAnaliseAudiosCommand { get; private set; }
 		public ICommand ReconhecimentoDeVozCommand { get; private set; }
+
 		public Analise analise { get; set; }
 		public AnaliseViewModel()
 		{
@@ -78,15 +84,12 @@ namespace Receitando.ViewModels
 			SendCommands();
 
 		}
-
-
 		public AnaliseViewModel(Analise analise)
 		{
 			micService = DependencyService.Resolve<IMicrophoneService>();
 			this.analise = analise;
 			SendCommands();
 		}
-
 		private void SendCommands()
 		{
 			VerAnaliseAudiosCommand = new Command(() =>
@@ -101,7 +104,6 @@ namespace Receitando.ViewModels
 			}
 			);
 		}
-
 		public void SalvarAnaliseDB()
 		{
 
@@ -141,7 +143,6 @@ namespace Receitando.ViewModels
 				return true;
 			return false;
 		}
-
 		async void TranscribeClicked()
 		{
 			bool isMicEnabled = await micService.GetPermissionAsync();
@@ -158,6 +159,7 @@ namespace Receitando.ViewModels
 			{
 				var config = SpeechConfig.FromSubscription(Constants.CognitiveServicesApiKey, Constants.CognitiveServicesRegion);
 				config.SpeechRecognitionLanguage = "pt-BR";
+				config.SetProfanity(Microsoft.CognitiveServices.Speech.ProfanityOption.Raw);
 				recognizer = new SpeechRecognizer(config);
 				recognizer.Recognized += (obj, args) =>
 				{
@@ -202,21 +204,22 @@ namespace Receitando.ViewModels
 			{
 				try
 				{
-					PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado[i]));
-					//string UltimaLocalizacao = await GetCurrentLocation();
-					//analise = new Analise(TextoCapturado[i], PerfilAgressivo, UltimaLocalizacao);
+					PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado[i]));									
 					analise = new Analise(TextoCapturado[i], PerfilAgressivo);
-					SalvarAnaliseDB();
+					SalvarAnaliseDB();					
 				}
 				catch
 				{
-				}
-				//TextoCapturado.Remove(TextoCapturado[i]); não dá para limpar a lista enquanto outro objeto adicionar nela.
+				}				
 				i++;
 			}
-			analisando = false;
-		}
 
+			stopwatch.Stop();
+			if (PerfilAgressivo && (stopwatch.ElapsedMilliseconds > 2000 || stopwatch.ElapsedMilliseconds == 0))
+				sendMensagemTelegramAsync();
+
+			analisando = false;
+		}		
 		void UpdateTranscription(string newText)
 		{
 			Device.BeginInvokeOnMainThread(() =>
@@ -238,19 +241,31 @@ namespace Receitando.ViewModels
 			{
 				if (isTranscribing)
 				{
-					ButtonText = "Stop";
+					ButtonText = "Parar";
 					ButtonColor = Color.Red;
 					ActiveIndicator = true;
 				}
 				else
 				{
-					ButtonText = "Play";
+					ButtonText = "Iniciar";
 					ButtonColor = Color.LightBlue;
 					ActiveIndicator = false;
 
 				}
 			});
 		}
+
+		private async Task sendMensagemTelegramAsync()
+		{
+			
+			stopwatch.Restart();
+			
+			long ticks1 = stopwatch.ElapsedMilliseconds;
+
+			var bot = new TelegramBotClient(Constants.TokenAPIBotTelegram);
+			var s = await bot.SendTextMessageAsync("@cvcm_bot", "Possível ocorrência de violência detectada! ");
+		}
+
 
 	}
 }

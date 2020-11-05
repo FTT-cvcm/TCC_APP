@@ -2,27 +2,33 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Receitando"
-             x:Class="Receitando.AnaliseView">
+             x:Class="Receitando.AnaliseView"
+             Visual="Material">
 
-    <StackLayout>
-        <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
-            <Label Text="MVP - Combate à violência contra a mulher" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+    <StackLayout Visual="Material">
+        <Frame BackgroundColor="#2196F3" Padding="15" CornerRadius="0"
+               Visual="Material">
+            <Label Text="MVP - Combate à violência contra a mulher" HorizontalTextAlignment="Center" TextColor="White" FontSize="25"
+                   Visual="Material"/>
         </Frame>       
-        <Label Text="Clique no botão abaixo para gravar um áudio" FontSize="16" Padding="30,0,30,0"/>
+        <Label Text="Clique no botão abaixo para gravar um áudio" FontSize="16" Padding="30,0,30,0"
+               Visual="Material"/>
         <ActivityIndicator x:Name="transcribingIndicator"
                            HorizontalOptions="Center"
                            VerticalOptions="Start"
                            WidthRequest="300"
-                           IsRunning="{Binding ActiveIndicator}" />
+                           IsRunning="{Binding ActiveIndicator}" 
+                           Visual="Material"/>
         <Button x:Name="start"
                 Text="{Binding ButtonText}"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
                 Command="{Binding ReconhecimentoDeVozCommand}"
                 BackgroundColor="{Binding ButtonColor}"                
-                ></Button>
-        <Label IsVisible='False' x:Name="recon" Text="{Binding Recon}" FontSize="16" Padding="30,0,30,0"/>
-        <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"></Button>
+                Visual="Material"></Button>        
+        <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"
+                Visual="Material"
+                BorderWidth="24"> </Button>
     </StackLayout>
 
 </ContentPage>
