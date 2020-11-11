@@ -1,4 +1,5 @@
-﻿using Microsoft.CognitiveServices.Speech;
+﻿using Android.Util;
+using Microsoft.CognitiveServices.Speech;
 using Newtonsoft.Json.Linq;
 using Receitando.Data;
 using Receitando.Model;
@@ -10,6 +11,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -21,17 +24,13 @@ namespace Receitando.ViewModels
 		Stopwatch stopwatch = new Stopwatch();
 		//Tempo em milisegundos entre cada mensagem enviada
 		const long APImilisegundos = 2000;
-
 		string buttonText = "Iniciar";
 		bool activeIndicator = false;
 		Color buttonColor = Color.LightBlue;
-
 		SpeechRecognizer recognizer;
 		IMicrophoneService micService;
-		bool isTranscribing = false;
-		
+		bool isTranscribing = false;		
 		bool analisando = false;
-
 		public string ButtonText
 		{
 			get
@@ -75,7 +74,6 @@ namespace Receitando.ViewModels
 		public List<string> TextoCapturado = new List<string>();
 		public ICommand VerAnaliseAudiosCommand { get; private set; }
 		public ICommand ReconhecimentoDeVozCommand { get; private set; }
-
 		public Analise analise { get; set; }
 		public AnaliseViewModel()
 		{
@@ -176,7 +174,7 @@ namespace Receitando.ViewModels
 				}
 				catch (Exception ex)
 				{
-					UpdateTranscription(ex.Message);
+					Log.Error("Receitando", ex.Message);
 				}
 				isTranscribing = false;
 			}
@@ -190,7 +188,7 @@ namespace Receitando.ViewModels
 				}
 				catch (Exception ex)
 				{
-					UpdateTranscription(ex.Message);
+					Log.Error("Receitando", ex.Message);
 				}
 				isTranscribing = true;
 			}
@@ -208,8 +206,9 @@ namespace Receitando.ViewModels
 					analise = new Analise(TextoCapturado[i], PerfilAgressivo);
 					SalvarAnaliseDB();					
 				}
-				catch
+				catch(Exception ex)
 				{
+					Log.Error("Receitando", ex.Message);
 				}				
 				i++;
 			}
@@ -217,7 +216,6 @@ namespace Receitando.ViewModels
 			stopwatch.Stop();
 			if (PerfilAgressivo && (stopwatch.ElapsedMilliseconds > 2000 || stopwatch.ElapsedMilliseconds == 0))
 				sendMensagemTelegramAsync();
-
 			analisando = false;
 		}		
 		void UpdateTranscription(string newText)
@@ -255,15 +253,15 @@ namespace Receitando.ViewModels
 			});
 		}
 
+		bool privado = true;
+		string destino;
 		private async Task sendMensagemTelegramAsync()
 		{
 			
 			stopwatch.Restart();
 			
-			long ticks1 = stopwatch.ElapsedMilliseconds;
-
-			var bot = new TelegramBotClient(Constants.TokenAPIBotTelegram);
-			var s = await bot.SendTextMessageAsync("@cvcm_bot", "Possível ocorrência de violência detectada! ");
+			var bot = new TelegramBotClient(Constants.TokenAPIBotTelegram);		
+			await bot.SendTextMessageAsync("@cvcm_bot", "Possível ocorrência de violência detectada!");
 		}
 
 

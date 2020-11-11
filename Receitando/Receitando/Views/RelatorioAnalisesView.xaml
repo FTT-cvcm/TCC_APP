@@ -4,30 +4,43 @@
              x:Class="Receitando.Views.RelatorioAnalisesView"
              Visual="Material">
     <ContentPage.Content Visual="Material">
-        <StackLayout>
-            <ListView ItemsSource="{Binding ListaAnalise}" Margin="25" Visual="Material">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <ViewCell.View>
-                                <Label>
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <FormattedString.Spans Visual="Material">
-                                                <Span Text="{Binding Data}" FontAttributes="Bold"></Span>
-                                                <Span Text=" - "></Span>
-                                                <Span Text="{Binding TextoCapturado}" FontAttributes="Bold"></Span>
-                                                <Span Text=" - "></Span>
-                                                <Span Text="{Binding PerfilAgressivo}" FontAttributes="Bold"></Span>                                                
-                                            </FormattedString.Spans>
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                            </ViewCell.View>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackLayout>        
+        <ListView HasUnevenRows="True" ItemsSource="{Binding ListaAnalise}" Margin="25" Visual="Material">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="10,15" Visual="Material">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Visual="Material"
+                                   Text="{Binding Data}"
+                                   Grid.Row="0"
+                                   Grid.Column="0"
+                                   FontSize="Small"
+                                   FontAttributes="Bold"></Label>
+                            <Label Visual="Material"
+                                   Text="{Binding TextoCapturado}"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   FontSize="Small">                                 
+                             </Label>                            
+                            <Image 
+                                   Grid.Row="0"
+                                   Grid.Column="1"
+                                   Source="violencia.png"
+                                   Grid.RowSpan="2"                                   
+                                   HeightRequest="50"
+                                   WidthRequest="50"                                   
+                                   HorizontalOptions="Center" Aspect="Fill"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </ContentPage.Content>
 </ContentPage>
