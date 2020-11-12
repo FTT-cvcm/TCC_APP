@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Receitando.Views.ReceitasView">
+    <ContentPage.Content Visual="Material">
+        <StackLayout>
+            <Image Source="download.jpeg"
+                           HeightRequest="100"
+                           WidthRequest="100"                                   
+                           HorizontalOptions="Center" 
+                           Aspect="Fill">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer
+                            Command="{Binding AnalisePageCommand}"
+                            />
+                </Image.GestureRecognizers>
+            </Image>
+            <ListView HasUnevenRows="True" ItemsSource="{Binding ListaReceita}" Margin="25" Visual="Material">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid Padding="10,15" Visual="Material">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Image 
+                                   Grid.Row="0"
+                                   Grid.Column="0"
+                                   Source="{Binding Imagem}"
+                                   Grid.RowSpan="2"
+                                   Grid.ColumnSpan="2"  
+                                   HeightRequest="150"
+                                   WidthRequest="150"                                   
+                                   HorizontalOptions="Center" Aspect="Fill"/>
+                                <Label Visual="Material"
+                                   Text="{Binding Nome}"
+                                   Grid.Row="2"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   FontSize="Small"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"></Label>
+                                <Label Visual="Material"
+                                   Text="{Binding Ingredientes}"
+                                   Grid.Row="3"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   HorizontalTextAlignment="Center"
+                                   FontSize="Small">
+                                </Label>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

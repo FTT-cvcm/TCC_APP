@@ -10,6 +10,8 @@ namespace Receitando
 
 		IMicrophoneService micService;
 		public AnaliseViewModel viewModel { get; set; }
+		
+		
 		public AnaliseView()
 		{
 			InitializeComponent();
@@ -38,6 +40,9 @@ namespace Receitando
 
 		}
 
-
+		private void Entry_Completed(object sender, System.EventArgs e)
+		{
+			
+		}
 	}
 }

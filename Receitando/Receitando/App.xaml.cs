@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Receitando.Views;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -9,8 +10,8 @@ namespace Receitando
         public App()
         {
             InitializeComponent();
-
-            MainPage = new NavigationPage(new AnaliseView());
+           
+            MainPage = new NavigationPage(new ReceitasView());
         }
 
         protected override void OnStart()

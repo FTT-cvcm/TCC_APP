@@ -20,16 +20,24 @@ namespace Receitando.ViewModels
 {
 	public class AnaliseViewModel : BaseViewModel
 	{
+		//Nome do canal do Telegram
+		private string canalTelegram;
+		public string CanalTelegram
+		{
+			get { return canalTelegram; }
+			set
+			{
+				canalTelegram = value;
+			}
+		}
 		//Controla o envio de mensagens para o Telegram
-		Stopwatch stopwatch = new Stopwatch();
-		//Tempo em milisegundos entre cada mensagem enviada
-		const long APImilisegundos = 2000;
+		Stopwatch stopwatch = new Stopwatch();		
 		string buttonText = "Iniciar";
 		bool activeIndicator = false;
 		Color buttonColor = Color.LightBlue;
 		SpeechRecognizer recognizer;
 		IMicrophoneService micService;
-		bool isTranscribing = false;		
+		bool isTranscribing = false;
 		bool analisando = false;
 		public string ButtonText
 		{
@@ -43,7 +51,7 @@ namespace Receitando.ViewModels
 				OnPropertyChanged();
 				OnPropertyChanged(ButtonText);
 			}
-		}	
+		}
 		public bool ActiveIndicator
 		{
 			get
@@ -69,7 +77,7 @@ namespace Receitando.ViewModels
 				OnPropertyChanged();
 				OnPropertyChanged("ButtonColor");
 			}
-		}	
+		}
 		public bool PerfilAgressivo { get; set; }
 		public List<string> TextoCapturado = new List<string>();
 		public ICommand VerAnaliseAudiosCommand { get; private set; }
@@ -202,14 +210,14 @@ namespace Receitando.ViewModels
 			{
 				try
 				{
-					PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado[i]));									
+					PerfilAgressivo = analisaResultadoAPI(await analiseSentimento(TextoCapturado[i]));
 					analise = new Analise(TextoCapturado[i], PerfilAgressivo);
-					SalvarAnaliseDB();					
+					SalvarAnaliseDB();
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.Error("Receitando", ex.Message);
-				}				
+				}
 				i++;
 			}
 
@@ -217,7 +225,7 @@ namespace Receitando.ViewModels
 			if (PerfilAgressivo && (stopwatch.ElapsedMilliseconds > 2000 || stopwatch.ElapsedMilliseconds == 0))
 				sendMensagemTelegramAsync();
 			analisando = false;
-		}		
+		}
 		void UpdateTranscription(string newText)
 		{
 			Device.BeginInvokeOnMainThread(() =>
@@ -252,16 +260,14 @@ namespace Receitando.ViewModels
 				}
 			});
 		}
-
-		bool privado = true;
-		string destino;
+			
 		private async Task sendMensagemTelegramAsync()
 		{
-			
+
 			stopwatch.Restart();
-			
-			var bot = new TelegramBotClient(Constants.TokenAPIBotTelegram);		
-			await bot.SendTextMessageAsync("@cvcm_bot", "Possível ocorrência de violência detectada!");
+
+			var bot = new TelegramBotClient(Constants.TokenAPIBotTelegram);
+			await bot.SendTextMessageAsync("@" + CanalTelegram, "Possível ocorrência de violência detectada!");
 		}
 
 

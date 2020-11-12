@@ -31,9 +31,8 @@ namespace Receitando.Model
 
         public string UltimaLocalizacao { get; set; }
 
-        public bool PerfilAgressivo { get; set; }
-
-		public Image ImagemViolencia { get; set; }
+        public bool PerfilAgressivo { get; set; }		
+        public string ImagemViolencia { get; set; }
 		public Analise()
         {
 
@@ -44,11 +43,12 @@ namespace Receitando.Model
             this.PerfilAgressivo = analiseTexto;
             this.UltimaLocalizacao = ultimaLocalizacao;
         }
-
+              
         public Analise(string textoCapturado, bool analiseTexto)
         {
             this.TextoCapturado = textoCapturado;
-            this.PerfilAgressivo = analiseTexto;            
+            this.PerfilAgressivo = analiseTexto;
+            this.ImagemViolencia = this.PerfilAgressivo ? "violencia.png" : "naoviolencia.png";
         }
     }
 }

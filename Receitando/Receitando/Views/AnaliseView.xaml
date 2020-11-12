@@ -4,13 +4,12 @@
              xmlns:local="clr-namespace:Receitando"
              x:Class="Receitando.AnaliseView"
              Visual="Material">
-
-    <StackLayout Visual="Material">
-        <Frame BackgroundColor="#2196F3" Padding="15" CornerRadius="0"
+    <StackLayout Visual="Material" Margin="10">
+        <Frame BackgroundColor="Black" Padding="10" CornerRadius="0"
                Visual="Material">
             <Label Text="MVP - Combate à violência contra a mulher" HorizontalTextAlignment="Center" TextColor="White" FontSize="25"
-                   Visual="Material"/>
-        </Frame>       
+                   Visual="Material" />
+        </Frame>
         <Label Text="Clique no botão abaixo para gravar um áudio" FontSize="16" Padding="30,0,30,0"
                Visual="Material"/>
         <ActivityIndicator x:Name="transcribingIndicator"
@@ -19,16 +18,28 @@
                            WidthRequest="300"
                            IsRunning="{Binding ActiveIndicator}" 
                            Visual="Material"/>
+
         <Button x:Name="start"
                 Text="{Binding ButtonText}"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
                 Command="{Binding ReconhecimentoDeVozCommand}"
                 BackgroundColor="{Binding ButtonColor}"                
-                Visual="Material"></Button>        
-        <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"
-                Visual="Material"
-                BorderWidth="24"> </Button>
-    </StackLayout>
+                Visual="Material"></Button>
 
+
+        <Entry Text="{Binding CanalTelegram}"
+                   Placeholder="Canal Telegram"
+                   />
+        <Button Text="Salvar Canal" Command="{Binding SalvarCanalCommand}"
+                    Visual="Material"
+                    BorderWidth="15"
+                    ></Button>
+
+
+        <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"
+                    Visual="Material"
+                    BorderWidth="20"
+                    HorizontalOptions="Center"></Button>
+    </StackLayout>
 </ContentPage>
