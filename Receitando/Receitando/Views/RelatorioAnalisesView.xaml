@@ -32,7 +32,7 @@
                             <Image 
                                    Grid.Row="0"
                                    Grid.Column="1"
-                                   Source="violencia.png"
+                                   Source="{Binding ImagemViolencia}"
                                    Grid.RowSpan="2"                                   
                                    HeightRequest="50"
                                    WidthRequest="50"                                   

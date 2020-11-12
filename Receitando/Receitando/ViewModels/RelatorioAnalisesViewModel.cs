@@ -8,7 +8,8 @@ namespace Receitando.ViewModels
 	public class RelatorioAnalisesViewModel : BaseViewModel
 	{
 		ObservableCollection<Analise> listaAnalise = new ObservableCollection<Analise>();
-		public bool Ocupado;
+		
+		public bool Ocupado;		
 		public ObservableCollection<Analise> ListaAnalise
 		{
 			get
@@ -22,6 +23,16 @@ namespace Receitando.ViewModels
 
 		}
 
+		public Analise SetImage(Analise analise)
+		{
+			if (analise.PerfilAgressivo)
+				analise.ImagemViolencia = new Image { Source = "violencia.jpg" };
+			else
+				analise.ImagemViolencia = new Image { Source = "naoviolencia.jpg"};
+
+			return analise;
+		}
+
 		public RelatorioAnalisesViewModel()
 		{
 			Ocupado = true;
@@ -31,8 +42,8 @@ namespace Receitando.ViewModels
 				var listadb = dao.Lista;
 				this.listaAnalise.Clear();
 				foreach (var itemDB in listadb)
-				{
-					this.listaAnalise.Add(itemDB);
+				{					
+					this.listaAnalise.Add(SetImage(itemDB));					
 				}
 
 			}

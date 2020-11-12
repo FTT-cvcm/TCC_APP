@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace Receitando.Model
 {
@@ -32,7 +33,8 @@ namespace Receitando.Model
 
         public bool PerfilAgressivo { get; set; }
 
-        public Analise()
+		public Image ImagemViolencia { get; set; }
+		public Analise()
         {
 
         }
