@@ -16,7 +16,8 @@ namespace Receitando.ViewModels
 
 		//Controla o entre os clicks
 		Stopwatch stopwatch = new Stopwatch();
-		int count = 0;
+		int count = 0;		
+
 		public List<Receita> ListaReceita
 		{
 			get
@@ -39,14 +40,14 @@ namespace Receitando.ViewModels
 														 "1 colher (sopa) de sal\r\n")
 
 				},
-				new Receita{Imagem = "iogurtecaseiro.jpeg", Nome = "Iogurte Caseiro sabor Morango\r\n",
+				new Receita{Imagem = "iogurtecaseiro.jpeg", Nome = "Iogurte Caseiro sabor Morango",
 							Ingredientes =  String.Format("2 litros de leite\r\n"+
 							"1 lata de leite condensado\r\n"+
 							"200 gr de iogurte grego\r\n"+
 							"1 caixinha de gelatina sabor morango\r\n"+
 							"1 xícara (chá) de morango picado\r\n")
 				},
-				new Receita{Imagem = "paodecebolacaseiro.jpeg", Nome = "Pão de Cebola Caseiro\r\n",
+				new Receita{Imagem = "paodecebolacaseiro.jpeg", Nome = "Pão de Cebola Caseiro",
 							Ingredientes =  String.Format("1/4 xícara (chá) de óleo de soja\r\n" +
 							"1 xícara (chá) de leite\r\n" +
 							"2 unidades de ovo\r\n" +
@@ -76,6 +77,7 @@ namespace Receitando.ViewModels
 				if (count > 4)
 				{
 					stopwatch.Reset();
+					count = 0;
 					MessagingCenter.Send<ReceitasViewMovel>(this, "EntrarAnaliseView");
 				}
 			});

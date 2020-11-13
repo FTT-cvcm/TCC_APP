@@ -4,20 +4,20 @@
              xmlns:local="clr-namespace:Receitando"
              x:Class="Receitando.AnaliseView"
              Visual="Material">
-    <StackLayout Visual="Material" Margin="10">
-        <Frame BackgroundColor="Black" Padding="10" CornerRadius="0"
+    <StackLayout Visual="Material" Margin="0" BackgroundColor="AntiqueWhite">
+        <Frame BackgroundColor="Purple" Padding="10" CornerRadius="0"
                Visual="Material">
-            <Label Text="MVP - Combate à violência contra a mulher" HorizontalTextAlignment="Center" TextColor="White" FontSize="25"
-                   Visual="Material" />
+            <Label Text="Combate à violência contra a mulher" HorizontalTextAlignment="Center" TextColor="white"  FontSize="25"
+                   Visual="Material"/>
         </Frame>
-        <Label Text="Clique no botão abaixo para gravar um áudio" FontSize="16" Padding="30,0,30,0"
-               Visual="Material"/>
+        
         <ActivityIndicator x:Name="transcribingIndicator"
                            HorizontalOptions="Center"
                            VerticalOptions="Start"
                            WidthRequest="300"
                            IsRunning="{Binding ActiveIndicator}" 
-                           Visual="Material"/>
+                           Visual="Material"
+                           Margin="10"/>
 
         <Button x:Name="start"
                 Text="{Binding ButtonText}"
@@ -25,21 +25,35 @@
                 HorizontalOptions="Center"
                 Command="{Binding ReconhecimentoDeVozCommand}"
                 BackgroundColor="{Binding ButtonColor}"                
-                Visual="Material"></Button>
+                Visual="Material"
+                WidthRequest="100"
+                HeightRequest="100"
+                CornerRadius="100"/>
 
-
+        <StackLayout Orientation="Horizontal" Margin="10" HorizontalOptions="CenterAndExpand">
+            
         <Entry Text="{Binding CanalTelegram}"
                    Placeholder="Canal Telegram"
+                   HorizontalOptions="Start"
+                   WidthRequest="240"                 
                    />
-        <Button Text="Salvar Canal" Command="{Binding SalvarCanalCommand}"
+        
+        <Button Text="Salvar" Command="{Binding SalvarCanalCommand}"
                     Visual="Material"
-                    BorderWidth="15"
+                    BorderWidth="0"              
+                    HorizontalOptions="EndAndExpand"                    
+                    CornerRadius="15"
+                    BackgroundColor="LightSalmon"    
                     ></Button>
 
-
+        </StackLayout>
         <Button Text="Ver Análises dos Áudios" Command="{Binding VerAnaliseAudiosCommand}"
                     Visual="Material"
-                    BorderWidth="20"
-                    HorizontalOptions="Center"></Button>
+                    BorderWidth="10"
+                    WidthRequest="400"                    
+                    HorizontalOptions="Center"
+                    Margin="10"
+                    CornerRadius="15"
+                    BackgroundColor="LightSalmon"></Button>
     </StackLayout>
 </ContentPage>

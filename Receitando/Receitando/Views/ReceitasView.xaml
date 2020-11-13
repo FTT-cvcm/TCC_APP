@@ -1,21 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Receitando.Views.ReceitasView">
+             x:Class="Receitando.Views.ReceitasView"
+             BackgroundColor = "AntiqueWhite">   
     <ContentPage.Content Visual="Material">
-        <StackLayout>
-            <Image Source="download.jpeg"
+        <StackLayout BackgroundColor="AntiqueWhite">
+            <Image Source="receitandologo.png"
                            HeightRequest="100"
-                           WidthRequest="100"                                   
+                           WidthRequest="400"                                   
                            HorizontalOptions="Center" 
-                           Aspect="Fill">
+                           Aspect="AspectFit"
+                           Margin="5">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer
-                            Command="{Binding AnalisePageCommand}"
-                            />
+                            Command="{Binding AnalisePageCommand}"/>
                 </Image.GestureRecognizers>
             </Image>
-            <ListView HasUnevenRows="True" ItemsSource="{Binding ListaReceita}" Margin="25" Visual="Material">
+            <ListView HasUnevenRows="True" ItemsSource="{Binding ListaReceita}" Margin="5" Visual="Material">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>

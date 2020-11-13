@@ -4,11 +4,12 @@
              x:Class="Receitando.Views.RelatorioAnalisesView"
              Visual="Material">
     <ContentPage.Content Visual="Material">
-        <ListView HasUnevenRows="True" ItemsSource="{Binding ListaAnalise}" Margin="25" Visual="Material">
+        <ListView HasUnevenRows="True" ItemsSource="{Binding ListaAnalise}" Visual="Material"
+                   BackgroundColor="AntiqueWhite">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid Padding="10,15" Visual="Material">
+                        <Grid Padding="10,15" Visual="Material" Margin="10">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -21,13 +22,13 @@
                                    Text="{Binding Data}"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   FontSize="Small"
+                                   FontSize="Medium"
                                    FontAttributes="Bold"></Label>
                             <Label Visual="Material"
                                    Text="{Binding TextoCapturado}"
                                    Grid.Row="1"
                                    Grid.Column="0"
-                                   FontSize="Small">                                 
+                                   FontSize="Medium">                                 
                              </Label>                            
                             <Image 
                                    Grid.Row="0"
@@ -36,7 +37,7 @@
                                    Grid.RowSpan="2"                                   
                                    HeightRequest="50"
                                    WidthRequest="50"                                   
-                                   HorizontalOptions="Center" Aspect="Fill"/>
+                                   HorizontalOptions="Center" Aspect="AspectFit"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

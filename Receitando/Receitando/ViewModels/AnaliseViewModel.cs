@@ -31,10 +31,10 @@ namespace Receitando.ViewModels
 			}
 		}
 		//Controla o envio de mensagens para o Telegram
-		Stopwatch stopwatch = new Stopwatch();		
+		Stopwatch stopwatch = new Stopwatch();
 		string buttonText = "Iniciar";
 		bool activeIndicator = false;
-		Color buttonColor = Color.LightBlue;
+		Color buttonColor = Color.LightSalmon;
 		SpeechRecognizer recognizer;
 		IMicrophoneService micService;
 		bool isTranscribing = false;
@@ -248,13 +248,13 @@ namespace Receitando.ViewModels
 				if (isTranscribing)
 				{
 					ButtonText = "Parar";
-					ButtonColor = Color.Red;
+					ButtonColor = Color.DarkSalmon;
 					ActiveIndicator = true;
 				}
 				else
 				{
 					ButtonText = "Iniciar";
-					ButtonColor = Color.LightBlue;
+					ButtonColor = Color.LightSalmon;
 					ActiveIndicator = false;
 
 				}
