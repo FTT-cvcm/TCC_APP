@@ -35,7 +35,12 @@ namespace Receitando.Data
 
         public void Salvar(Analise analise)
         {
-            conexao.Insert(analise);
+            conexao.Insert(analise);           
+        }
+
+        public void Deletar(Analise analise)
+		{
+            conexao.Delete(analise);
         }
 
     }

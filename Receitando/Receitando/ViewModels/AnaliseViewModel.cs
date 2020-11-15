@@ -3,16 +3,16 @@ using Microsoft.CognitiveServices.Speech;
 using Newtonsoft.Json.Linq;
 using Receitando.Data;
 using Receitando.Model;
+using Receitando.Models;
 using Receitando.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Telegram.Bot;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -20,83 +20,111 @@ namespace Receitando.ViewModels
 {
 	public class AnaliseViewModel : BaseViewModel
 	{
+		#region Propriedades
 		//Nome do canal do Telegram
-		private string canalTelegram;
-		public string CanalTelegram
+		private CanalTelegram canalTelegram = new CanalTelegram();
+		public CanalTelegram CanalTelegram
 		{
-			get { return canalTelegram; }
+			get
+			{
+				return canalTelegram;
+			}
 			set
 			{
 				canalTelegram = value;
+				OnPropertyChanged();
+				OnPropertyChanged(CanalTelegram.Nome);
 			}
 		}
 		//Controla o envio de mensagens para o Telegram
-		Stopwatch stopwatch = new Stopwatch();
-		string buttonText = "Iniciar";
-		bool activeIndicator = false;
-		Color buttonColor = Color.LightSalmon;
-		SpeechRecognizer recognizer;
-		IMicrophoneService micService;
-		bool isTranscribing = false;
+		Stopwatch cronometro = new Stopwatch();
+
+		//Texto do Botão
+		string textoBotao = "Iniciar";
+
+		//Indicador de atividade
+		bool indicadorAtividade = false;
+
+		//Cor do Botão
+		Color corBotao = Color.LightSalmon;
+
+		//Váriavel do reconhecimento de voz
+		SpeechRecognizer reconhecedor;
+
+		//Interface do serviço do microfone
+		IMicrophoneService micServico;
+
+		//Controla se está transcrevendo o áudio
+		bool transcrevendo = false;
+
+		//Controla se já está analisando o áudio
 		bool analisando = false;
-		public string ButtonText
+		public bool PerfilAgressivo { get; set; }
+		public List<string> TextoCapturado = new List<string>();
+		public Analise analise { get; set; }
+		public string TextoBotao
 		{
 			get
 			{
-				return buttonText;
+				return textoBotao;
 			}
 			set
 			{
-				buttonText = value;
+				textoBotao = value;
 				OnPropertyChanged();
-				OnPropertyChanged(ButtonText);
+				OnPropertyChanged(TextoBotao);
 			}
 		}
-		public bool ActiveIndicator
+		public bool IndicadorAtividade
 		{
 			get
 			{
-				return activeIndicator;
+				return indicadorAtividade;
 			}
 			set
 			{
-				activeIndicator = value;
+				indicadorAtividade = value;
 				OnPropertyChanged();
-				OnPropertyChanged("ActiveIndicator");
+				OnPropertyChanged("IndicadorAtividade");
 			}
 		}
-		public Color ButtonColor
+		public Color CorBotao
 		{
 			get
 			{
-				return buttonColor;
+				return corBotao;
 			}
 			set
 			{
-				buttonColor = value;
+				corBotao = value;
 				OnPropertyChanged();
 				OnPropertyChanged("ButtonColor");
 			}
 		}
-		public bool PerfilAgressivo { get; set; }
-		public List<string> TextoCapturado = new List<string>();
-		public ICommand VerAnaliseAudiosCommand { get; private set; }
-		public ICommand ReconhecimentoDeVozCommand { get; private set; }
-		public Analise analise { get; set; }
+		#endregion
 		public AnaliseViewModel()
 		{
+			using (var conexao = DependencyService.Get<ISQLite>().PegarConnection())
+			{
+				CanalTelegramDAO dao = new CanalTelegramDAO(conexao);
+				var canal = dao.CanalTelegram;
+				if(canal.Count > 0)
+					canalTelegram = canal[0];
 
-			micService = DependencyService.Resolve<IMicrophoneService>();
-			SendCommands();
+			}
+			micServico = DependencyService.Resolve<IMicrophoneService>();
+			Comandos();
+			
 
 		}
-		public AnaliseViewModel(Analise analise)
-		{
-			micService = DependencyService.Resolve<IMicrophoneService>();
-			this.analise = analise;
-			SendCommands();
-		}
-		private void SendCommands()
+
+		//Comandos que vem da View
+		public ICommand VerAnaliseAudiosCommand { get; private set; }
+		public ICommand ReconhecimentoDeVozCommand { get; private set; }
+		public ICommand SalvarCanalCommand { get; private set; }
+
+		//Setando funções dos comandos
+		private void Comandos()
 		{
 			VerAnaliseAudiosCommand = new Command(() =>
 			{
@@ -106,10 +134,25 @@ namespace Receitando.ViewModels
 
 			ReconhecimentoDeVozCommand = new Command(() =>
 			{
-				TranscribeClicked();
+				TranscreverClick();
 			}
 			);
+
+			SalvarCanalCommand = new Command(() =>
+			{
+				SalvarCanal();
+			});
 		}
+
+		private void SalvarCanal()
+		{
+			using (var conexao = DependencyService.Get<ISQLite>().PegarConnection())
+			{
+				CanalTelegramDAO dao = new CanalTelegramDAO(conexao);
+				dao.Salvar(CanalTelegram);
+			}
+		}
+
 		public void SalvarAnaliseDB()
 		{
 
@@ -119,21 +162,6 @@ namespace Receitando.ViewModels
 				dao.Salvar(analise);
 			}
 
-		}
-		static async Task<String> GetCurrentLocation()
-		{
-			try
-			{
-				var request = new GeolocationRequest(GeolocationAccuracy.Best);
-				var location = await Geolocation.GetLastKnownLocationAsync();
-				string LocalAtual = location.Latitude.ToString() + ";" + location.Longitude.ToString();
-				return LocalAtual;
-			}
-			catch (Exception ex)
-			{
-				string LocalAtual = "Não disponível";
-				return LocalAtual;
-			}
 		}
 		static async Task<String> analiseSentimento(string texto)
 		{
@@ -149,42 +177,42 @@ namespace Receitando.ViewModels
 				return true;
 			return false;
 		}
-		async void TranscribeClicked()
+		async void TranscreverClick()
 		{
-			bool isMicEnabled = await micService.GetPermissionAsync();
+			bool micHabilitado = await micServico.GetPermissionAsync();
 
 			// EARLY OUT: make sure mic is accessible
-			if (!isMicEnabled)
+			if (!micHabilitado)
 			{
 				UpdateTranscription("Acesso ao microfone não concedido.");
 				return;
 			}
 
 			// initialize speech recognizer 
-			if (recognizer == null)
+			if (reconhecedor == null)
 			{
 				var config = SpeechConfig.FromSubscription(Constants.CognitiveServicesApiKey, Constants.CognitiveServicesRegion);
 				config.SpeechRecognitionLanguage = "pt-BR";
 				config.SetProfanity(Microsoft.CognitiveServices.Speech.ProfanityOption.Raw);
-				recognizer = new SpeechRecognizer(config);
-				recognizer.Recognized += (obj, args) =>
+				reconhecedor = new SpeechRecognizer(config);
+				reconhecedor.Recognized += (obj, args) =>
 				{
 					UpdateTranscription(args.Result.Text);
 				};
 			}
 
 			// if already transcribing, stop speech recognizer
-			if (isTranscribing)
+			if (transcrevendo)
 			{
 				try
 				{
-					await recognizer.StopContinuousRecognitionAsync();
+					await reconhecedor.StopContinuousRecognitionAsync();
 				}
 				catch (Exception ex)
 				{
 					Log.Error("Receitando", ex.Message);
 				}
-				isTranscribing = false;
+				transcrevendo = false;
 			}
 
 			// if not transcribing, start speech recognizer
@@ -192,13 +220,13 @@ namespace Receitando.ViewModels
 			{
 				try
 				{
-					await recognizer.StartContinuousRecognitionAsync();
+					await reconhecedor.StartContinuousRecognitionAsync();
 				}
 				catch (Exception ex)
 				{
 					Log.Error("Receitando", ex.Message);
 				}
-				isTranscribing = true;
+				transcrevendo = true;
 			}
 			UpdateDisplayState();
 		}
@@ -221,8 +249,8 @@ namespace Receitando.ViewModels
 				i++;
 			}
 
-			stopwatch.Stop();
-			if (PerfilAgressivo && (stopwatch.ElapsedMilliseconds > 2000 || stopwatch.ElapsedMilliseconds == 0))
+			cronometro.Stop();
+			if (PerfilAgressivo && (cronometro.ElapsedMilliseconds > 2000 || cronometro.ElapsedMilliseconds == 0))
 				sendMensagemTelegramAsync();
 			analisando = false;
 		}
@@ -245,30 +273,32 @@ namespace Receitando.ViewModels
 		{
 			Device.BeginInvokeOnMainThread(() =>
 			{
-				if (isTranscribing)
+				if (transcrevendo)
 				{
-					ButtonText = "Parar";
-					ButtonColor = Color.DarkSalmon;
-					ActiveIndicator = true;
+					TextoBotao = "Parar";
+					CorBotao = Color.DarkSalmon;
+					IndicadorAtividade = true;
 				}
 				else
 				{
-					ButtonText = "Iniciar";
-					ButtonColor = Color.LightSalmon;
-					ActiveIndicator = false;
+					TextoBotao = "Iniciar";
+					CorBotao = Color.LightSalmon;
+					IndicadorAtividade = false;
 
 				}
 			});
 		}
-			
+
 		private async Task sendMensagemTelegramAsync()
 		{
 
-			stopwatch.Restart();
+			cronometro.Restart();
 
 			var bot = new TelegramBotClient(Constants.TokenAPIBotTelegram);
-			await bot.SendTextMessageAsync("@" + CanalTelegram, "Possível ocorrência de violência detectada!");
+			await bot.SendTextMessageAsync("@" + CanalTelegram.Nome, "Possível ocorrência de violência detectada!");
 		}
+		
+		
 
 
 	}

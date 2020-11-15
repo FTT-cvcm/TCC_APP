@@ -25,6 +25,8 @@ namespace Receitando.ViewModels
 				return listaReceita;
 			}			
 		}
+		
+		
 		public ICommand AnalisePageCommand { get; private set; }
 		public ReceitasViewMovel()		
 		{

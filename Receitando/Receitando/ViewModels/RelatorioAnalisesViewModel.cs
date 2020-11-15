@@ -2,26 +2,22 @@
 using Receitando.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace Receitando.ViewModels
 {
 	public class RelatorioAnalisesViewModel : BaseViewModel
 	{
-		ObservableCollection<Analise> listaAnalise = new ObservableCollection<Analise>();	
+		ObservableCollection<Analise> listaAnalise = new ObservableCollection<Analise>();
 
-		public bool Ocupado;		
+		public bool Ocupado;
 		public ObservableCollection<Analise> ListaAnalise
 		{
 			get
 			{
 				return listaAnalise;
 			}
-			//set
-			//{
-			//	listaAnalise = value;
-			//}
-
 		}
 
 		public RelatorioAnalisesViewModel()
@@ -34,11 +30,29 @@ namespace Receitando.ViewModels
 				this.listaAnalise.Clear();
 				foreach (var itemDB in listadb)
 				{
-					this.listaAnalise.Add(itemDB);					
+					this.listaAnalise.Add(itemDB);
 				}
 
 			}
-			Ocupado = false;
+			Ocupado = false;		
 		}
+
+		public void RemoverAnalise(Analise analise)
+		{
+			try
+			{
+				using (var conexao = DependencyService.Get<ISQLite>().PegarConnection())
+				{
+					AnaliseDAO dao = new AnaliseDAO(conexao);
+					dao.Deletar(analise);
+				}
+			}
+			catch
+			{
+
+			}
+		}
+		
+
 	}
 }

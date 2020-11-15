@@ -15,24 +15,24 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Start"
                            WidthRequest="300"
-                           IsRunning="{Binding ActiveIndicator}" 
+                           IsRunning="{Binding IndicadorAtividade}" 
                            Visual="Material"
                            Margin="10"/>
 
         <Button x:Name="start"
-                Text="{Binding ButtonText}"
+                Text="{Binding TextoBotao}"
                 VerticalOptions="CenterAndExpand"
                 HorizontalOptions="Center"
                 Command="{Binding ReconhecimentoDeVozCommand}"
-                BackgroundColor="{Binding ButtonColor}"                
+                BackgroundColor="{Binding CorBotao}"                
                 Visual="Material"
                 WidthRequest="100"
                 HeightRequest="100"
                 CornerRadius="100"/>
 
         <StackLayout Orientation="Horizontal" Margin="10" HorizontalOptions="CenterAndExpand">
-            
-        <Entry Text="{Binding CanalTelegram}"
+
+            <Entry Text="{Binding CanalTelegram.Nome}"
                    Placeholder="Canal Telegram"
                    HorizontalOptions="Start"
                    WidthRequest="240"                 

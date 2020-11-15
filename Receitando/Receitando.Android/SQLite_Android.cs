@@ -20,7 +20,7 @@ namespace Receitando.Droid
 {
     class SQLite_Android : ISQLite
     {
-        private const string nomeArquivoDB = "AnaliseDB.db3";
+        private const string nomeArquivoDB = "Receitando.db3";
         public SQLiteConnection PegarConnection()
         {
             //Cria uma pasta base local para o dispositivo

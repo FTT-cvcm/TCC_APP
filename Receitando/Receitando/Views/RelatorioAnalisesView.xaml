@@ -9,6 +9,9 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
+                        <ViewCell.ContextActions>
+                            <MenuItem Clicked="OnRemoverAnaliseClicked" CommandParameter="{Binding .}" Text="Remover" IsDestructive="True"></MenuItem>
+                        </ViewCell.ContextActions>
                         <Grid Padding="10,15" Visual="Material" Margin="10">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
