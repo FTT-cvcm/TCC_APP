@@ -121,9 +121,6 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\cake.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Receitando\Receitando.csproj">
       <Project>{211ab777-4f14-4b3f-9bfc-51d5a793d585}</Project>
       <Name>Receitando</Name>
@@ -146,6 +143,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\receitandologo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_launcher_circle.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
