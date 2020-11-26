@@ -250,7 +250,7 @@ namespace Receitando.ViewModels
 			}
 
 			cronometro.Stop();
-			if (PerfilAgressivo && (cronometro.ElapsedMilliseconds > 2000 || cronometro.ElapsedMilliseconds == 0))
+			if (PerfilAgressivo && (cronometro.ElapsedMilliseconds > 1000 || cronometro.ElapsedMilliseconds == 0))
 				sendMensagemTelegramAsync();
 			analisando = false;
 		}
@@ -260,6 +260,7 @@ namespace Receitando.ViewModels
 			{
 				if (!string.IsNullOrWhiteSpace(newText))
 				{
+					newText = newText.Substring(0, newText.Length - 1);
 					TextoCapturado.Add(newText);
 				}
 				if (!analisando)
